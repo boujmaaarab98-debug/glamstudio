@@ -1076,7 +1076,13 @@
 
   function goPage2() {
     const name = document.getElementById('prodName').value.trim();
-    if (!name) { showToast('Veuillez entrer le nom du produit'); document.getElementById('prodName').focus(); return; }
+    if (!name) { showToast('Veuillez entrer le nom du produit ⬆️'); document.getElementById('prodName').focus(); return; }
+    productData.name = name;
+    productData.cat = document.getElementById('prodCat').value;
+    productData.price = document.getElementById('prodPrice').value;
+    productData.benefits = document.getElementById('prodBenefits').value;
+    productData.target = document.getElementById('prodTarget').value;
+    productData.ingredients = document.getElementById('prodIngredients').value;
     showPage(2);
   }
 
