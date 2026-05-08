@@ -643,7 +643,7 @@
           <input type="url" id="imgUrl" placeholder="https://i.imgur.com/..." style="flex:1;padding:10px 14px;border-radius:var(--radius-sm);border:1px solid var(--border-strong);background:#fafafa;font-size:14px;font-family:'DM Sans',sans-serif;outline:none;" oninput="handleUrlInput(this.value)">
           <button onclick="loadImageUrl()" style="padding:10px 16px;border-radius:var(--radius-sm);border:1px solid var(--border-strong);background:var(--pink-light);color:var(--pink-dark);font-size:13px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;white-space:nowrap;">Charger</button>
         </div>
-        <div style="font-size:12px;color:var(--text-hint);margin-top:5px;">💡 Uploadez votre photo sur <a href="https://imgur.com/upload" target="_blank" style="color:var(--pink);">imgur.com</a> gratuitement, puis copiez le lien ici</div>
+        <div style="font-size:12px;color:var(--text-hint);margin-top:5px;">💡 Upload ta photo sur <strong>Google Drive</strong> → Click droit → "Obtenir le lien" → colle le lien ici. Le site le convertit automatiquement !</div>
       </div>
 
       <!-- Divider -->
@@ -990,10 +990,20 @@
     if (val.match(/\.(jpg|jpeg|png|webp|gif)(\?.*)?$/i)) loadImageUrl();
   }
 
-  function loadImageUrl() {
-    const url = document.getElementById('imgUrl').value.trim();
-    if (!url) { showToast("Entrez un lien image d'abord"); return; }
+  function parseImageUrl(raw) {
+    // Google Drive: convert share link to direct image link
+    const gdrive = raw.match(/drive\.google\.com\/file\/d\/([a-zA-Z0-9_-]+)/);
+    if (gdrive) return 'https://drive.google.com/uc?export=view&id=' + gdrive[1];
+    // Google Drive uc link already
+    if (raw.includes('drive.google.com/uc')) return raw;
+    return raw;
+  }
 
+  function loadImageUrl() {
+    const raw = document.getElementById('imgUrl').value.trim();
+    if (!raw) { showToast("Entrez un lien image d'abord"); return; }
+
+    const url = parseImageUrl(raw);
     const zone = document.getElementById('uploadZone');
     const placeholder = document.getElementById('uploadPlaceholder');
     const success = document.getElementById('uploadSuccess');
@@ -1003,43 +1013,32 @@
     success.style.display = 'block';
     success.textContent = '⏳ Chargement...';
 
-    function applyImage() {
+    function applyImage(src) {
+      preview.src = src;
       preview.style.display = 'block';
-      preview.style.maxHeight = '200px';
+      preview.style.maxHeight = '220px';
       preview.style.width = '100%';
       preview.style.objectFit = 'contain';
       preview.style.borderRadius = '8px';
       preview.style.marginBottom = '10px';
       zone.classList.add('has-image');
-      productData.imageUrl = url;
+      productData.imageUrl = src;
     }
 
-    // Try direct first, then via CORS proxy
-    preview.onload = () => {
-      applyImage();
-      success.textContent = '✓ Image chargée avec succès';
+    // Test if image loads
+    const tester = new Image();
+    tester.onload = () => {
+      applyImage(url);
+      success.textContent = '✓ Image chargée avec succès !';
       showToast('Image chargée !');
     };
-
-    preview.onerror = () => {
-      // Try via corsproxy
-      const proxy = 'https://corsproxy.io/?' + encodeURIComponent(url);
-      const preview2 = document.getElementById('uploadPreview');
-      preview2.onload = () => {
-        applyImage();
-        success.textContent = '✓ Image chargée avec succès';
-        showToast('Image chargée !');
-      };
-      preview2.onerror = () => {
-        // Still show as linked even if can't display
-        applyImage();
-        success.textContent = '✓ Lien enregistré (aperçu indisponible)';
-        showToast('Lien enregistré !');
-      };
-      preview2.src = proxy;
+    tester.onerror = () => {
+      // Fallback: just store the link and show placeholder success
+      applyImage(url);
+      success.textContent = '✓ Lien Google Drive enregistré';
+      showToast('Lien enregistré !');
     };
-
-    preview.src = url;
+    tester.src = url;
   }
 
   function handleDrag(e) { e.preventDefault(); document.getElementById('uploadZone').classList.add('dragover'); }
