@@ -636,14 +636,32 @@
           <div class="card-subtitle-text">Photo claire sur fond neutre recommandée</div>
         </div>
       </div>
+      <!-- URL input -->
+      <div style="margin-bottom:12px;">
+        <label style="font-size:12px;font-weight:500;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;display:block;margin-bottom:6px;">Lien image (Imgur, Google Drive, etc.)</label>
+        <div style="display:flex;gap:8px;">
+          <input type="url" id="imgUrl" placeholder="https://i.imgur.com/..." style="flex:1;padding:10px 14px;border-radius:var(--radius-sm);border:1px solid var(--border-strong);background:#fafafa;font-size:14px;font-family:'DM Sans',sans-serif;outline:none;" oninput="handleUrlInput(this.value)">
+          <button onclick="loadImageUrl()" style="padding:10px 16px;border-radius:var(--radius-sm);border:1px solid var(--border-strong);background:var(--pink-light);color:var(--pink-dark);font-size:13px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;white-space:nowrap;">Charger</button>
+        </div>
+        <div style="font-size:12px;color:var(--text-hint);margin-top:5px;">💡 Uploadez votre photo sur <a href="https://imgur.com/upload" target="_blank" style="color:var(--pink);">imgur.com</a> gratuitement, puis copiez le lien ici</div>
+      </div>
+
+      <!-- Divider -->
+      <div style="display:flex;align-items:center;gap:10px;margin:14px 0;">
+        <div style="flex:1;height:1px;background:var(--border);"></div>
+        <span style="font-size:12px;color:var(--text-hint);">ou</span>
+        <div style="flex:1;height:1px;background:var(--border);"></div>
+      </div>
+
+      <!-- File upload fallback -->
       <div class="upload-zone" id="uploadZone" onclick="document.getElementById('fileInput').click()" ondragover="handleDrag(event)" ondrop="handleDrop(event)">
-        <div class="upload-placeholder">
+        <div class="upload-placeholder" id="uploadPlaceholder">
           <div class="upload-icon-big">📷</div>
-          <div class="upload-hint"><strong>Cliquez pour choisir</strong> ou glissez votre photo ici</div>
-          <div class="upload-subhint">JPG, PNG, WEBP — max 10 MB</div>
+          <div class="upload-hint"><strong>Cliquez pour choisir</strong> un fichier local</div>
+          <div class="upload-subhint">JPG, PNG, WEBP — fonctionne en local seulement</div>
         </div>
         <img id="uploadPreview" class="upload-preview" alt="Aperçu produit">
-        <div class="upload-success" id="uploadSuccess" style="display:none">✓ Photo chargée avec succès</div>
+        <div class="upload-success" id="uploadSuccess" style="display:none">✓ Image chargée avec succès</div>
       </div>
       <input type="file" id="fileInput" accept="image/*" style="display:none" onchange="handleFile(this)">
     </div>
@@ -966,6 +984,29 @@
       success.textContent = '✓ ' + file.name + ' chargée';
     };
     reader.readAsDataURL(file);
+  }
+
+  function handleUrlInput(val) {
+    if (val.match(/\.(jpg|jpeg|png|webp|gif)(\?.*)?$/i)) loadImageUrl();
+  }
+
+  function loadImageUrl() {
+    const url = document.getElementById('imgUrl').value.trim();
+    if (!url) { showToast('Entrez un lien image d\'abord'); return; }
+    const preview = document.getElementById('uploadPreview');
+    const success = document.getElementById('uploadSuccess');
+    const zone = document.getElementById('uploadZone');
+    const placeholder = document.getElementById('uploadPlaceholder');
+    preview.onload = () => {
+      zone.classList.add('has-image');
+      if (placeholder) placeholder.style.display = 'none';
+      success.style.display = 'block';
+      success.textContent = '✓ Image chargée depuis le lien';
+      productData.imageUrl = url;
+      showToast('Image chargée !');
+    };
+    preview.onerror = () => showToast('Lien invalide — vérifiez l\'URL');
+    preview.src = url;
   }
 
   function handleDrag(e) { e.preventDefault(); document.getElementById('uploadZone').classList.add('dragover'); }
