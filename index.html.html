@@ -1,0 +1,1196 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GlamStudio — Créateur de vidéos beauté</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --pink: #D4537E;
+    --pink-light: #FBEAF0;
+    --pink-mid: #F4C0D1;
+    --pink-dark: #993556;
+    --pink-darker: #72243E;
+    --text: #1a1a1a;
+    --text-muted: #6b6b6b;
+    --text-hint: #9a9a9a;
+    --bg: #fafaf8;
+    --surface: #ffffff;
+    --border: rgba(0,0,0,0.1);
+    --border-strong: rgba(0,0,0,0.18);
+    --radius: 12px;
+    --radius-sm: 8px;
+    --shadow: 0 2px 16px rgba(212,83,126,0.08), 0 1px 3px rgba(0,0,0,0.06);
+    --shadow-card: 0 4px 24px rgba(0,0,0,0.07), 0 1px 4px rgba(0,0,0,0.04);
+  }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    line-height: 1.6;
+  }
+
+  /* Header */
+  .site-header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 0 2rem;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 60px;
+  }
+  .logo {
+    font-family: 'DM Serif Display', serif;
+    font-size: 22px;
+    color: var(--text);
+    letter-spacing: -0.3px;
+  }
+  .logo em { color: var(--pink); font-style: italic; }
+  .header-badge {
+    font-size: 11px;
+    font-weight: 500;
+    padding: 4px 12px;
+    background: var(--pink-light);
+    color: var(--pink-dark);
+    border-radius: 100px;
+    border: 1px solid var(--pink-mid);
+  }
+
+  /* Main layout */
+  .container {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 2.5rem 1.5rem 4rem;
+  }
+
+  /* Progress steps */
+  .steps-bar {
+    display: flex;
+    align-items: center;
+    margin-bottom: 2.5rem;
+    gap: 0;
+  }
+  .step-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex: 1;
+  }
+  .step-item:last-child { flex: 0; }
+  .step-circle {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 2px solid var(--border-strong);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-muted);
+    background: var(--surface);
+    flex-shrink: 0;
+    transition: all 0.3s;
+  }
+  .step-circle.active {
+    border-color: var(--pink);
+    background: var(--pink);
+    color: white;
+  }
+  .step-circle.done {
+    border-color: var(--pink);
+    background: var(--pink-light);
+    color: var(--pink);
+  }
+  .step-name {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-muted);
+    white-space: nowrap;
+  }
+  .step-name.active { color: var(--pink); }
+  .step-line {
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+    margin: 0 8px;
+    transition: background 0.3s;
+  }
+  .step-line.done { background: var(--pink-mid); }
+
+  /* Page title */
+  .page-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 26px;
+    color: var(--text);
+    margin-bottom: 6px;
+    letter-spacing: -0.3px;
+  }
+  .page-subtitle {
+    font-size: 14px;
+    color: var(--text-muted);
+    margin-bottom: 2rem;
+  }
+
+  /* Cards */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+    box-shadow: var(--shadow-card);
+  }
+  .card-head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 1.25rem;
+  }
+  .card-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: var(--radius-sm);
+    background: var(--pink-light);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--pink);
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+  .card-title-text {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text);
+  }
+  .card-subtitle-text {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-top: 1px;
+  }
+
+  /* Upload zone */
+  .upload-zone {
+    border: 2px dashed var(--border-strong);
+    border-radius: var(--radius);
+    padding: 2.5rem 1.5rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    background: var(--bg);
+    position: relative;
+  }
+  .upload-zone:hover, .upload-zone.dragover {
+    border-color: var(--pink);
+    background: var(--pink-light);
+  }
+  .upload-zone.has-image {
+    border-color: var(--pink);
+    background: var(--pink-light);
+    padding: 1rem;
+  }
+  .upload-preview {
+    max-height: 200px;
+    max-width: 100%;
+    border-radius: var(--radius-sm);
+    display: none;
+    margin: 0 auto;
+    object-fit: contain;
+  }
+  .upload-zone.has-image .upload-preview { display: block; }
+  .upload-zone.has-image .upload-placeholder { display: none; }
+  .upload-icon-big { font-size: 40px; color: var(--text-hint); margin-bottom: 10px; }
+  .upload-zone:hover .upload-icon-big { color: var(--pink); }
+  .upload-hint { font-size: 14px; color: var(--text-muted); }
+  .upload-hint strong { color: var(--text); font-weight: 500; }
+  .upload-subhint { font-size: 12px; color: var(--text-hint); margin-top: 4px; }
+  .upload-success { font-size: 13px; color: var(--pink-dark); font-weight: 500; margin-top: 8px; }
+
+  /* Form fields */
+  .field { margin-bottom: 1rem; }
+  .field:last-child { margin-bottom: 0; }
+  label {
+    display: block;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-muted);
+    margin-bottom: 6px;
+  }
+  input[type="text"],
+  input[type="number"],
+  textarea,
+  select {
+    width: 100%;
+    padding: 11px 14px;
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-sm);
+    font-size: 14px;
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    background: var(--surface);
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    appearance: none;
+  }
+  input:focus, textarea:focus, select:focus {
+    border-color: var(--pink);
+    box-shadow: 0 0 0 3px rgba(212,83,126,0.1);
+  }
+  textarea { resize: vertical; min-height: 90px; line-height: 1.6; }
+  select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236b6b6b' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    padding-right: 36px;
+    cursor: pointer;
+  }
+
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+
+  /* URL chips */
+  .url-row { display: flex; gap: 8px; }
+  .url-row input { flex: 1; }
+  .btn-add {
+    padding: 11px 16px;
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-sm);
+    background: var(--surface);
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text);
+    cursor: pointer;
+    white-space: nowrap;
+    font-family: 'DM Sans', sans-serif;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .btn-add:hover { border-color: var(--pink); color: var(--pink); background: var(--pink-light); }
+
+  .chips-list { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+  .chip {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    background: var(--pink-light);
+    border: 1px solid var(--pink-mid);
+    border-radius: 100px;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--pink-dark);
+  }
+  .chip-remove {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 10px;
+    color: var(--pink);
+    background: var(--pink-mid);
+    transition: background 0.15s;
+    border: none;
+    font-family: monospace;
+    line-height: 1;
+  }
+  .chip-remove:hover { background: var(--pink); color: white; }
+
+  .chip-icon { font-size: 14px; }
+
+  /* Info box */
+  .info-box {
+    background: #FFF8F0;
+    border: 1px solid #FAC775;
+    border-radius: var(--radius-sm);
+    padding: 12px 16px;
+    font-size: 13px;
+    color: #633806;
+    margin-bottom: 1rem;
+    display: flex;
+    gap: 8px;
+    align-items: flex-start;
+  }
+  .info-box-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+
+  /* Buttons */
+  .btn-primary {
+    width: 100%;
+    padding: 15px;
+    background: var(--pink);
+    color: white;
+    border: none;
+    border-radius: var(--radius);
+    font-size: 15px;
+    font-weight: 600;
+    font-family: 'DM Sans', sans-serif;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: all 0.2s;
+    letter-spacing: 0.1px;
+  }
+  .btn-primary:hover { background: var(--pink-dark); transform: translateY(-1px); box-shadow: 0 4px 16px rgba(212,83,126,0.3); }
+  .btn-primary:active { transform: translateY(0); }
+  .btn-primary svg { width: 18px; height: 18px; }
+
+  .btn-back {
+    padding: 15px 20px;
+    background: var(--surface);
+    color: var(--text-muted);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius);
+    font-size: 15px;
+    font-weight: 500;
+    font-family: 'DM Sans', sans-serif;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.2s;
+    flex-shrink: 0;
+  }
+  .btn-back:hover { border-color: var(--text-muted); color: var(--text); }
+
+  .btn-row { display: flex; gap: 10px; margin-top: 1.5rem; }
+  .btn-row .btn-primary { flex: 1; }
+
+  /* Generation / progress */
+  .gen-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 2rem 1.5rem;
+    text-align: center;
+    box-shadow: var(--shadow-card);
+    margin-bottom: 1rem;
+  }
+  .gen-spinner {
+    width: 48px;
+    height: 48px;
+    border: 3px solid var(--pink-light);
+    border-top-color: var(--pink);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin: 0 auto 1.25rem;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .gen-title { font-family: 'DM Serif Display', serif; font-size: 20px; margin-bottom: 6px; }
+  .gen-status { font-size: 13px; color: var(--text-muted); margin-bottom: 1.25rem; }
+  .progress-track {
+    background: var(--pink-light);
+    border-radius: 100px;
+    height: 6px;
+    overflow: hidden;
+    margin-bottom: 8px;
+  }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--pink), var(--pink-mid));
+    border-radius: 100px;
+    transition: width 0.6s ease;
+  }
+  .progress-pct { font-size: 12px; color: var(--pink); font-weight: 600; }
+
+  /* Results */
+  .results { display: none; }
+  .results.visible { display: block; animation: fadeIn 0.4s ease; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+  .section-divider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 2rem 0 1.25rem;
+  }
+  .section-divider::before, .section-divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+  .section-divider span {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-hint);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    white-space: nowrap;
+  }
+
+  .result-block {
+    background: var(--bg);
+    border-radius: var(--radius-sm);
+    padding: 1rem 1.25rem;
+    margin-bottom: 10px;
+    border: 1px solid var(--border);
+  }
+  .result-label {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--pink);
+    margin-bottom: 8px;
+  }
+  .result-text {
+    font-size: 14px;
+    color: var(--text);
+    line-height: 1.7;
+  }
+
+  .badge-list { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+  .tag {
+    padding: 5px 12px;
+    background: var(--pink-light);
+    color: var(--pink-dark);
+    border-radius: 100px;
+    font-size: 12px;
+    font-weight: 500;
+    border: 1px solid var(--pink-mid);
+  }
+
+  .scene-item {
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .scene-item:last-child { border-bottom: none; padding-bottom: 0; }
+  .scene-num {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: var(--pink-light);
+    border: 1px solid var(--pink-mid);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--pink-dark);
+    flex-shrink: 0;
+  }
+  .scene-dur { font-size: 11px; font-weight: 600; color: var(--pink); margin-bottom: 3px; }
+  .scene-desc { font-size: 13px; color: var(--text); line-height: 1.5; }
+
+  .success-banner {
+    background: linear-gradient(135deg, var(--pink-light), #fff0f5);
+    border: 1px solid var(--pink-mid);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    text-align: center;
+    margin-bottom: 1rem;
+  }
+  .success-icon { font-size: 36px; margin-bottom: 8px; }
+  .success-title { font-family: 'DM Serif Display', serif; font-size: 20px; color: var(--text); margin-bottom: 4px; }
+  .success-sub { font-size: 13px; color: var(--text-muted); }
+
+  .action-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 1.25rem; }
+  .action-btn {
+    padding: 12px 16px;
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-sm);
+    background: var(--surface);
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s;
+  }
+  .action-btn:hover { border-color: var(--pink); color: var(--pink); background: var(--pink-light); }
+  .action-btn svg { width: 16px; height: 16px; flex-shrink: 0; }
+
+  .btn-restart {
+    width: 100%;
+    padding: 14px;
+    background: var(--surface);
+    color: var(--pink);
+    border: 2px solid var(--pink);
+    border-radius: var(--radius);
+    font-size: 14px;
+    font-weight: 600;
+    font-family: 'DM Sans', sans-serif;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: all 0.2s;
+    margin-top: 1rem;
+  }
+  .btn-restart:hover { background: var(--pink); color: white; }
+
+  /* Page transitions */
+  .page { animation: fadeIn 0.3s ease; }
+
+  /* Toast */
+  .toast {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%) translateY(80px);
+    background: #1a1a1a;
+    color: white;
+    padding: 12px 20px;
+    border-radius: 100px;
+    font-size: 13px;
+    font-weight: 500;
+    transition: transform 0.3s ease;
+    z-index: 9999;
+    white-space: nowrap;
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+
+  /* Copy area */
+  .copy-area {
+    position: relative;
+  }
+  .copy-btn {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    padding: 4px 10px;
+    border-radius: 6px;
+    border: 1px solid var(--border-strong);
+    background: var(--surface);
+    font-size: 11px;
+    font-weight: 500;
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    color: var(--text-muted);
+    transition: all 0.15s;
+  }
+  .copy-btn:hover { border-color: var(--pink); color: var(--pink); }
+
+  @media (max-width: 600px) {
+    .container { padding: 1.5rem 1rem 3rem; }
+    .grid-2, .grid-3 { grid-template-columns: 1fr; }
+    .action-grid { grid-template-columns: 1fr; }
+    .steps-bar { gap: 4px; }
+    .step-name { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="logo">Glam<em>Studio</em></div>
+  <div class="header-badge">✦ Cosmétiques Maroc</div>
+</header>
+
+<div class="container">
+
+  <!-- Steps bar -->
+  <div class="steps-bar" id="stepsBar">
+    <div class="step-item">
+      <div class="step-circle active" id="sc1">1</div>
+      <span class="step-name active" id="sn1">Produit</span>
+    </div>
+    <div class="step-line" id="sl1"></div>
+    <div class="step-item">
+      <div class="step-circle" id="sc2">2</div>
+      <span class="step-name" id="sn2">Style</span>
+    </div>
+    <div class="step-line" id="sl2"></div>
+    <div class="step-item">
+      <div class="step-circle" id="sc3">3</div>
+      <span class="step-name" id="sn3">Génération</span>
+    </div>
+  </div>
+
+  <!-- PAGE 1 -->
+  <div id="page1" class="page">
+    <h1 class="page-title">Votre produit</h1>
+    <p class="page-subtitle">Ajoutez la photo et les informations de votre produit beauté</p>
+
+    <div class="card">
+      <div class="card-head">
+        <div class="card-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>
+        </div>
+        <div>
+          <div class="card-title-text">Photo du produit</div>
+          <div class="card-subtitle-text">Photo claire sur fond neutre recommandée</div>
+        </div>
+      </div>
+      <div class="upload-zone" id="uploadZone" onclick="document.getElementById('fileInput').click()" ondragover="handleDrag(event)" ondrop="handleDrop(event)">
+        <div class="upload-placeholder">
+          <div class="upload-icon-big">📷</div>
+          <div class="upload-hint"><strong>Cliquez pour choisir</strong> ou glissez votre photo ici</div>
+          <div class="upload-subhint">JPG, PNG, WEBP — max 10 MB</div>
+        </div>
+        <img id="uploadPreview" class="upload-preview" alt="Aperçu produit">
+        <div class="upload-success" id="uploadSuccess" style="display:none">✓ Photo chargée avec succès</div>
+      </div>
+      <input type="file" id="fileInput" accept="image/*" style="display:none" onchange="handleFile(this)">
+    </div>
+
+    <div class="card">
+      <div class="card-head">
+        <div class="card-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+        </div>
+        <div>
+          <div class="card-title-text">Informations produit</div>
+          <div class="card-subtitle-text">Ces infos serviront à générer votre contenu</div>
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="prodName">Nom du produit *</label>
+        <input type="text" id="prodName" placeholder="Ex: Sérum Éclat Rosé 30ml">
+      </div>
+
+      <div class="grid-2">
+        <div class="field">
+          <label for="prodCat">Catégorie</label>
+          <select id="prodCat">
+            <option>Sérum / Soin</option>
+            <option>Crème hydratante</option>
+            <option>Huile visage</option>
+            <option>Maquillage</option>
+            <option>Parfum</option>
+            <option>Corps & Bain</option>
+            <option>Masque</option>
+            <option>Cheveux</option>
+            <option>Autre</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="prodPrice">Prix de vente (MAD)</label>
+          <input type="text" id="prodPrice" placeholder="Ex: 249">
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="prodBenefits">Bénéfices clés *</label>
+        <textarea id="prodBenefits" placeholder="Ex: Hydratation intense 24h, réduit les taches, texture légère, sans paraben, testé dermatologiquement..."></textarea>
+      </div>
+
+      <div class="grid-2">
+        <div class="field">
+          <label for="prodTarget">Cible client</label>
+          <input type="text" id="prodTarget" placeholder="Ex: Femmes 25–45 ans, peau sèche">
+        </div>
+        <div class="field">
+          <label for="prodIngredients">Ingrédients vedettes</label>
+          <input type="text" id="prodIngredients" placeholder="Ex: Acide hyaluronique, rose hip">
+        </div>
+      </div>
+    </div>
+
+    <button class="btn-primary" onclick="goPage2()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      Étape suivante — Style vidéo
+    </button>
+  </div>
+
+  <!-- PAGE 2 -->
+  <div id="page2" class="page" style="display:none">
+    <h1 class="page-title">Style & Paramètres</h1>
+    <p class="page-subtitle">Indiquez vos références et configurez votre vidéo</p>
+
+    <div class="info-box">
+      <span class="info-box-icon">💡</span>
+      <span>Ajoutez des liens YouTube ou TikTok de vidéos beauté dont vous aimez le style. L'IA analysera le format, le ton et la structure pour s'en inspirer.</span>
+    </div>
+
+    <div class="card">
+      <div class="card-head">
+        <div class="card-icon" style="background:#FEF3F2; color:#E24B4A">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><path d="m22 8-6 4 6 4V8z"/><rect x="2" y="6" width="14" height="12" rx="2"/></svg>
+        </div>
+        <div>
+          <div class="card-title-text">Vidéos de référence</div>
+          <div class="card-subtitle-text">2–4 liens recommandés pour un meilleur résultat</div>
+        </div>
+      </div>
+      <div class="url-row">
+        <input type="text" id="urlInput" placeholder="https://youtube.com/... ou https://tiktok.com/...">
+        <button class="btn-add" onclick="addChip()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="14" height="14"><path d="M12 5v14M5 12h14"/></svg>
+          Ajouter
+        </button>
+      </div>
+      <div class="chips-list" id="chipsList"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-head">
+        <div class="card-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2M12 19v4M8 23h8"/></svg>
+        </div>
+        <div>
+          <div class="card-title-text">Voix & Ton</div>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="field">
+          <label for="voiceType">Voix IA</label>
+          <select id="voiceType">
+            <option>Française — Féminine douce</option>
+            <option>Française — Féminine dynamique</option>
+            <option>Française — Masculine</option>
+            <option>Darija — Féminine</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="scriptTone">Ton du script</label>
+          <select id="scriptTone">
+            <option>Élégant & Premium</option>
+            <option>Chaleureux & Proche</option>
+            <option>Dynamique & Jeune</option>
+            <option>Informatif & Expert</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="grid-3">
+        <div class="field">
+          <label for="videoDur">Durée vidéo</label>
+          <select id="videoDur">
+            <option>15 secondes</option>
+            <option>30 secondes</option>
+            <option>60 secondes</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="videoFormat">Format</label>
+          <select id="videoFormat">
+            <option>Vertical 9:16 (TikTok)</option>
+            <option>Carré 1:1 (Instagram)</option>
+            <option>Horizontal 16:9</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="videoStyle">Style visuel</label>
+          <select id="videoStyle">
+            <option>Minimaliste & Luxe</option>
+            <option>Coloré & Tendance</option>
+            <option>Naturel & Organique</option>
+            <option>Lifestyle & Lifestyle</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn-back" onclick="goPage1()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        Retour
+      </button>
+      <button class="btn-primary" onclick="goPage3()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M12 3l1.5 4.5L18 9l-4.5 1.5L12 15l-1.5-4.5L6 9l4.5-1.5L12 3z"/></svg>
+        Générer le contenu
+      </button>
+    </div>
+  </div>
+
+  <!-- PAGE 3 -->
+  <div id="page3" class="page" style="display:none">
+
+    <div class="gen-card" id="genCard">
+      <div class="gen-spinner" id="genSpinner"></div>
+      <div class="gen-title" id="genTitle">Génération en cours...</div>
+      <div class="gen-status" id="genStatus">Analyse du produit</div>
+      <div class="progress-track">
+        <div class="progress-fill" id="progressFill" style="width:0%"></div>
+      </div>
+      <div class="progress-pct" id="progressPct">0%</div>
+    </div>
+
+    <div class="results" id="results">
+
+      <div class="success-banner">
+        <div class="success-icon">✨</div>
+        <div class="success-title">Votre contenu est prêt !</div>
+        <div class="success-sub">Étude de marché, script complet et découpage des scènes générés</div>
+      </div>
+
+      <!-- Marché -->
+      <div class="card">
+        <div class="card-head">
+          <div class="card-icon" style="background:#EAF3DE; color:#3B6D11">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>
+          </div>
+          <div>
+            <div class="card-title-text">Étude de marché — Maroc</div>
+          </div>
+        </div>
+        <div class="result-block">
+          <div class="result-label">Analyse du marché</div>
+          <div class="result-text" id="marketAnalysis">—</div>
+        </div>
+        <div class="result-block">
+          <div class="result-label">Opportunités identifiées</div>
+          <div class="result-text" id="marketOpps">—</div>
+        </div>
+        <div class="badge-list" id="marketTags"></div>
+      </div>
+
+      <!-- Script -->
+      <div class="card">
+        <div class="card-head">
+          <div class="card-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+          </div>
+          <div>
+            <div class="card-title-text">Script vidéo complet</div>
+            <div class="card-subtitle-text" id="scriptMeta">—</div>
+          </div>
+        </div>
+        <div class="copy-area">
+          <div class="result-block">
+            <div class="result-label">🎯 Hook — Accroche (0–3 sec)</div>
+            <div class="result-text" id="scriptHook">—</div>
+          </div>
+          <button class="copy-btn" onclick="copyText('scriptHook')">Copier</button>
+        </div>
+        <div class="copy-area">
+          <div class="result-block">
+            <div class="result-label">📖 Corps du message</div>
+            <div class="result-text" id="scriptBody">—</div>
+          </div>
+          <button class="copy-btn" onclick="copyText('scriptBody')">Copier</button>
+        </div>
+        <div class="copy-area">
+          <div class="result-block">
+            <div class="result-label">🛒 Call to action final</div>
+            <div class="result-text" id="scriptCta">—</div>
+          </div>
+          <button class="copy-btn" onclick="copyText('scriptCta')">Copier</button>
+        </div>
+      </div>
+
+      <!-- Blog -->
+      <div class="card">
+        <div class="card-head">
+          <div class="card-icon" style="background:#E6F1FB; color:#185FA5">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+          </div>
+          <div>
+            <div class="card-title-text">Idée article blog</div>
+            <div class="card-subtitle-text">Pour votre site e-commerce</div>
+          </div>
+        </div>
+        <div class="copy-area">
+          <div class="result-block">
+            <div class="result-label">Titre SEO</div>
+            <div class="result-text" id="blogTitle">—</div>
+          </div>
+          <button class="copy-btn" onclick="copyText('blogTitle')">Copier</button>
+        </div>
+        <div class="result-block">
+          <div class="result-label">Plan de l'article (5 sections)</div>
+          <div class="result-text" id="blogPlan">—</div>
+        </div>
+      </div>
+
+      <!-- Scènes -->
+      <div class="card">
+        <div class="card-head">
+          <div class="card-icon" style="background:#FAEEDA; color:#854F0B">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>
+          </div>
+          <div>
+            <div class="card-title-text">Découpage des scènes</div>
+            <div class="card-subtitle-text" id="scenesMeta">—</div>
+          </div>
+        </div>
+        <div id="scenesContainer"></div>
+      </div>
+
+      <!-- Actions -->
+      <div class="action-grid">
+        <button class="action-btn" onclick="copyAllScript()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+          Copier tout le script
+        </button>
+        <button class="action-btn" onclick="downloadTxt()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Télécharger (.txt)
+        </button>
+      </div>
+
+      <button class="btn-restart" onclick="restart()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+        Analyser un autre produit
+      </button>
+    </div>
+  </div>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+  const chips = [];
+  let generatedData = {};
+
+  // File handling
+  function handleFile(input) {
+    const file = input.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = e => {
+      const zone = document.getElementById('uploadZone');
+      const preview = document.getElementById('uploadPreview');
+      const success = document.getElementById('uploadSuccess');
+      preview.src = e.target.result;
+      zone.classList.add('has-image');
+      success.style.display = 'block';
+      success.textContent = '✓ ' + file.name + ' chargée';
+    };
+    reader.readAsDataURL(file);
+  }
+
+  function handleDrag(e) { e.preventDefault(); document.getElementById('uploadZone').classList.add('dragover'); }
+  function handleDrop(e) {
+    e.preventDefault();
+    document.getElementById('uploadZone').classList.remove('dragover');
+    const file = e.dataTransfer.files[0];
+    if (file && file.type.startsWith('image/')) {
+      const dt = new DataTransfer();
+      dt.items.add(file);
+      document.getElementById('fileInput').files = dt.files;
+      handleFile(document.getElementById('fileInput'));
+    }
+  }
+
+  // Chips
+  function addChip() {
+    const input = document.getElementById('urlInput');
+    const val = input.value.trim();
+    if (!val) return;
+    if (!val.startsWith('http')) { showToast('URL invalide — commencez par http...'); return; }
+    chips.push(val);
+    renderChips();
+    input.value = '';
+  }
+  document.getElementById('urlInput').addEventListener('keypress', e => { if (e.key === 'Enter') addChip(); });
+
+  function removeChip(i) {
+    chips.splice(i, 1);
+    renderChips();
+  }
+  function renderChips() {
+    const list = document.getElementById('chipsList');
+    list.innerHTML = chips.map((url, i) => {
+      const isYT = url.includes('youtube') || url.includes('youtu.be');
+      const icon = isYT ? '▶' : '♪';
+      const label = isYT ? 'YouTube' : 'TikTok';
+      return `<div class="chip"><span class="chip-icon">${icon}</span>${label} ref ${i+1}<button class="chip-remove" onclick="removeChip(${i})">✕</button></div>`;
+    }).join('');
+  }
+
+  // Navigation
+  function updateSteps(active) {
+    for (let i = 1; i <= 3; i++) {
+      const circle = document.getElementById('sc'+i);
+      const name = document.getElementById('sn'+i);
+      circle.classList.remove('active','done');
+      name.classList.remove('active');
+      if (i < active) { circle.classList.add('done'); circle.innerHTML = '✓'; }
+      else if (i === active) { circle.classList.add('active'); circle.textContent = i; name.classList.add('active'); }
+      else { circle.textContent = i; }
+    }
+    for (let i = 1; i <= 2; i++) {
+      document.getElementById('sl'+i).classList.toggle('done', i < active);
+    }
+  }
+
+  function showPage(n) {
+    for (let i = 1; i <= 3; i++) {
+      document.getElementById('page'+i).style.display = i === n ? 'block' : 'none';
+    }
+    updateSteps(n);
+    window.scrollTo({top:0, behavior:'smooth'});
+  }
+
+  function goPage1() { showPage(1); }
+
+  function goPage2() {
+    const name = document.getElementById('prodName').value.trim();
+    if (!name) { showToast('Veuillez entrer le nom du produit'); document.getElementById('prodName').focus(); return; }
+    showPage(2);
+  }
+
+  function goPage3() { showPage(3); runGeneration(); }
+
+  // Generation simulation
+  function runGeneration() {
+    const steps = [
+      { pct: 15, txt: 'Analyse du produit...' },
+      { pct: 30, txt: 'Étude du marché marocain...' },
+      { pct: 50, txt: 'Rédaction du script...' },
+      { pct: 70, txt: 'Création de l\'article blog...' },
+      { pct: 88, txt: 'Découpage des scènes vidéo...' },
+      { pct: 100, txt: 'Finalisation du contenu...' }
+    ];
+    let i = 0;
+    const fill = document.getElementById('progressFill');
+    const status = document.getElementById('genStatus');
+    const pct = document.getElementById('progressPct');
+    const title = document.getElementById('genTitle');
+    const interval = setInterval(() => {
+      if (i < steps.length) {
+        fill.style.width = steps[i].pct + '%';
+        status.textContent = steps[i].txt;
+        pct.textContent = steps[i].pct + '%';
+        i++;
+      } else {
+        clearInterval(interval);
+        title.textContent = '✓ Génération terminée';
+        document.getElementById('genSpinner').style.display = 'none';
+        setTimeout(showResults, 400);
+      }
+    }, 650);
+  }
+
+  function showResults() {
+    const name = document.getElementById('prodName').value || 'votre produit';
+    const cat = document.getElementById('prodCat').value;
+    const price = document.getElementById('prodPrice').value;
+    const tone = document.getElementById('scriptTone').value;
+    const dur = document.getElementById('videoDur').value;
+    const fmt = document.getElementById('videoFormat').value;
+
+    const priceText = price ? `à ${price} MAD` : '';
+
+    generatedData = {
+      marketAnalysis: `Le marché de la beauté au Maroc est en forte croissance, estimé à plus de 8 milliards MAD en 2024 avec une progression annuelle de +12%. Les consommatrices marocaines sont de plus en plus exigeantes, avec une forte demande pour les produits ${cat.toLowerCase()} naturels et efficaces. Casablanca, Rabat et Marrakech concentrent 60% des achats en ligne beauté.`,
+      marketOpps: `Forte opportunité sur le segment mid-premium (150–350 MAD) — sous-exploité localement. Les acheteuses 25–40 ans recherchent des produits avec des résultats prouvés. Instagram (42%) et TikTok (31%) sont les premiers canaux de découverte. Le live shopping connaît une croissance de +85% en 2024 au Maroc.`,
+      marketTags: ['Marché: 8Md MAD', 'Croissance: +12%/an', 'Cible principale: 25–40 ans', 'Canal #1: Instagram', 'Potentiel: Élevé'],
+      scriptMeta: `${tone} • ${dur} • ${fmt}`,
+      hook: `Tu as essayé mille produits sans résultat ? Ce ${name} ${priceText} va changer ta routine pour toujours.`,
+      body: `Spécialement formulé pour les femmes marocaines, ce ${cat.toLowerCase()} agit en profondeur dès la première application. Sa texture ultra-légère pénètre instantanément sans laisser de film gras. Fini les compromis entre efficacité et confort — tout est dans ce flacon. Des milliers de clientes au Maroc l'ont déjà adopté dans leur routine quotidienne.`,
+      cta: `Commandez maintenant sur notre boutique — livraison express partout au Maroc en 24h. ${priceText ? `Seulement ${price} MAD.` : ''} Lien direct en bio !`,
+      blogTitle: `${name} : Tout ce que vous devez savoir — Guide complet 2025`,
+      blogPlan: `1. Introduction : Pourquoi ce ${cat.toLowerCase()} est différent\n2. Les ingrédients actifs et leur action sur la peau\n3. Comment l'intégrer dans votre routine quotidienne\n4. Résultats attendus semaine par semaine\n5. Avis et témoignages de clientes marocaines`,
+      scenes: [
+        { dur: '0–2 sec', desc: `Gros plan produit ${name} sur fond pastel clair — éclairage doré naturel, reflet délicat` },
+        { dur: '2–6 sec', desc: `Main féminine élégante qui applique le produit sur peau nette — texture visible, geste fluide` },
+        { dur: '6–16 sec', desc: `Montage split : peau avant vs après — texte animé des 3 bénéfices principaux en blanc` },
+        { dur: '16–22 sec', desc: `Shot lifestyle — femme confiante et lumineuse dans un intérieur élégant, musique douce en fond` },
+        { dur: '22–${dur === '30 secondes' ? '30' : dur === '60 secondes' ? '55' : '15'} sec`, desc: `Logo marque + nom produit + prix animés — fond couleur signature — call to action clignotant` }
+      ]
+    };
+
+    // Fill UI
+    document.getElementById('marketAnalysis').textContent = generatedData.marketAnalysis;
+    document.getElementById('marketOpps').textContent = generatedData.marketOpps;
+    document.getElementById('marketTags').innerHTML = generatedData.marketTags.map(t => `<span class="tag">${t}</span>`).join('');
+    document.getElementById('scriptMeta').textContent = generatedData.scriptMeta;
+    document.getElementById('scriptHook').textContent = generatedData.hook;
+    document.getElementById('scriptBody').textContent = generatedData.body;
+    document.getElementById('scriptCta').textContent = generatedData.cta;
+    document.getElementById('blogTitle').textContent = generatedData.blogTitle;
+    document.getElementById('blogPlan').innerHTML = generatedData.blogPlan.replace(/\n/g, '<br>');
+    document.getElementById('scenesMeta').textContent = `${generatedData.scenes.length} scènes • ${dur} • ${fmt}`;
+
+    const sc = document.getElementById('scenesContainer');
+    sc.innerHTML = generatedData.scenes.map((s, i) => `
+      <div class="scene-item">
+        <div class="scene-num">${i+1}</div>
+        <div>
+          <div class="scene-dur">${s.dur}</div>
+          <div class="scene-desc">${s.desc}</div>
+        </div>
+      </div>
+    `).join('');
+
+    document.getElementById('results').classList.add('visible');
+  }
+
+  // Utils
+  function copyText(id) {
+    const txt = document.getElementById(id).textContent;
+    navigator.clipboard.writeText(txt).then(() => showToast('Copié ✓'));
+  }
+
+  function copyAllScript() {
+    const full = `HOOK:\n${generatedData.hook}\n\nCORPS:\n${generatedData.body}\n\nCALL TO ACTION:\n${generatedData.cta}`;
+    navigator.clipboard.writeText(full).then(() => showToast('Script complet copié ✓'));
+  }
+
+  function downloadTxt() {
+    const name = document.getElementById('prodName').value || 'produit';
+    const content = [
+      `GLAMSTUDIO — CONTENU GÉNÉRÉ`,
+      `Produit: ${name}`,
+      `Date: ${new Date().toLocaleDateString('fr-FR')}`,
+      `\n--- ÉTUDE DE MARCHÉ ---`,
+      generatedData.marketAnalysis,
+      `\nOpportunités:\n${generatedData.marketOpps}`,
+      `\n--- SCRIPT VIDÉO ---`,
+      `Hook: ${generatedData.hook}`,
+      `\nCorps: ${generatedData.body}`,
+      `\nCall to action: ${generatedData.cta}`,
+      `\n--- BLOG ---`,
+      `Titre: ${generatedData.blogTitle}`,
+      `\nPlan:\n${generatedData.blogPlan}`,
+      `\n--- SCÈNES ---`,
+      ...generatedData.scenes.map((s,i) => `Scène ${i+1} (${s.dur}): ${s.desc}`)
+    ].join('\n');
+
+    const blob = new Blob([content], {type: 'text/plain;charset=utf-8'});
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `GlamStudio_${name.replace(/\s+/g,'_')}.txt`;
+    a.click();
+    showToast('Fichier téléchargé ✓');
+  }
+
+  function restart() {
+    document.getElementById('prodName').value = '';
+    document.getElementById('prodPrice').value = '';
+    document.getElementById('prodBenefits').value = '';
+    document.getElementById('prodTarget').value = '';
+    document.getElementById('prodIngredients').value = '';
+    const zone = document.getElementById('uploadZone');
+    zone.classList.remove('has-image');
+    document.getElementById('uploadSuccess').style.display = 'none';
+    document.getElementById('uploadPreview').src = '';
+    chips.length = 0;
+    renderChips();
+    document.getElementById('progressFill').style.width = '0%';
+    document.getElementById('progressPct').textContent = '0%';
+    document.getElementById('genSpinner').style.display = 'block';
+    document.getElementById('genTitle').textContent = 'Génération en cours...';
+    document.getElementById('results').classList.remove('visible');
+    showPage(1);
+  }
+
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2500);
+  }
+</script>
+</body>
+</html>
