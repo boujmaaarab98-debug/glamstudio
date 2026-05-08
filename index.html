@@ -992,20 +992,40 @@
 
   function loadImageUrl() {
     const url = document.getElementById('imgUrl').value.trim();
-    if (!url) { showToast('Entrez un lien image d\'abord'); return; }
-    const preview = document.getElementById('uploadPreview');
-    const success = document.getElementById('uploadSuccess');
+    if (!url) { showToast("Entrez un lien image d'abord"); return; }
+
     const zone = document.getElementById('uploadZone');
     const placeholder = document.getElementById('uploadPlaceholder');
-    preview.onload = () => {
+    const success = document.getElementById('uploadSuccess');
+    const preview = document.getElementById('uploadPreview');
+
+    if (placeholder) placeholder.style.display = 'none';
+    success.style.display = 'block';
+    success.textContent = '⏳ Chargement...';
+
+    function applyImage() {
+      preview.style.display = 'block';
+      preview.style.maxHeight = '200px';
+      preview.style.width = '100%';
+      preview.style.objectFit = 'contain';
+      preview.style.borderRadius = '8px';
+      preview.style.marginBottom = '10px';
       zone.classList.add('has-image');
-      if (placeholder) placeholder.style.display = 'none';
-      success.style.display = 'block';
-      success.textContent = '✓ Image chargée depuis le lien';
       productData.imageUrl = url;
+    }
+
+    preview.onload = () => {
+      applyImage();
+      success.textContent = '✓ Image chargée avec succès';
       showToast('Image chargée !');
     };
-    preview.onerror = () => showToast('Lien invalide — vérifiez l\'URL');
+
+    preview.onerror = () => {
+      applyImage();
+      success.textContent = '✓ Lien image enregistré';
+      showToast('Lien enregistré !');
+    };
+
     preview.src = url;
   }
 
