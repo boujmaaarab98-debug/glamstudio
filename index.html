@@ -1014,6 +1014,7 @@
       productData.imageUrl = url;
     }
 
+    // Try direct first, then via CORS proxy
     preview.onload = () => {
       applyImage();
       success.textContent = '✓ Image chargée avec succès';
@@ -1021,9 +1022,21 @@
     };
 
     preview.onerror = () => {
-      applyImage();
-      success.textContent = '✓ Lien image enregistré';
-      showToast('Lien enregistré !');
+      // Try via corsproxy
+      const proxy = 'https://corsproxy.io/?' + encodeURIComponent(url);
+      const preview2 = document.getElementById('uploadPreview');
+      preview2.onload = () => {
+        applyImage();
+        success.textContent = '✓ Image chargée avec succès';
+        showToast('Image chargée !');
+      };
+      preview2.onerror = () => {
+        // Still show as linked even if can't display
+        applyImage();
+        success.textContent = '✓ Lien enregistré (aperçu indisponible)';
+        showToast('Lien enregistré !');
+      };
+      preview2.src = proxy;
     };
 
     preview.src = url;
