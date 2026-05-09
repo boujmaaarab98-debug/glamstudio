@@ -1154,7 +1154,7 @@
     }, 650);
   }
 
-  function showResults() {
+ async function showResults() {
     const name = document.getElementById('prodName').value || 'votre produit';
     const cat = document.getElementById('prodCat').value;
     const price = document.getElementById('prodPrice').value;
@@ -1164,24 +1164,43 @@
 
     const priceText = price ? `à ${price} MAD` : '';
 
-    generatedData = {
-      marketAnalysis: `Le marché de la beauté au Maroc est en forte croissance, estimé à plus de 8 milliards MAD en 2024 avec une progression annuelle de +12%. Les consommatrices marocaines sont de plus en plus exigeantes, avec une forte demande pour les produits ${cat.toLowerCase()} naturels et efficaces. Casablanca, Rabat et Marrakech concentrent 60% des achats en ligne beauté.`,
-      marketOpps: `Forte opportunité sur le segment mid-premium (150–350 MAD) — sous-exploité localement. Les acheteuses 25–40 ans recherchent des produits avec des résultats prouvés. Instagram (42%) et TikTok (31%) sont les premiers canaux de découverte. Le live shopping connaît une croissance de +85% en 2024 au Maroc.`,
-      marketTags: ['Marché: 8Md MAD', 'Croissance: +12%/an', 'Cible principale: 25–40 ans', 'Canal #1: Instagram', 'Potentiel: Élevé'],
-      scriptMeta: `${tone} • ${dur} • ${fmt}`,
-      hook: `Tu as essayé mille produits sans résultat ? Ce ${name} ${priceText} va changer ta routine pour toujours.`,
-      body: `Spécialement formulé pour les femmes marocaines, ce ${cat.toLowerCase()} agit en profondeur dès la première application. Sa texture ultra-légère pénètre instantanément sans laisser de film gras. Fini les compromis entre efficacité et confort — tout est dans ce flacon. Des milliers de clientes au Maroc l'ont déjà adopté dans leur routine quotidienne.`,
-      cta: `Commandez maintenant sur notre boutique — livraison express partout au Maroc en 24h. ${priceText ? `Seulement ${price} MAD.` : ''} Lien direct en bio !`,
-      blogTitle: `${name} : Tout ce que vous devez savoir — Guide complet 2025`,
-      blogPlan: `1. Introduction : Pourquoi ce ${cat.toLowerCase()} est différent\n2. Les ingrédients actifs et leur action sur la peau\n3. Comment l'intégrer dans votre routine quotidienne\n4. Résultats attendus semaine par semaine\n5. Avis et témoignages de clientes marocaines`,
-      scenes: [
-        { dur: '0–2 sec', desc: `Gros plan produit ${name} sur fond pastel clair — éclairage doré naturel, reflet délicat` },
-        { dur: '2–6 sec', desc: `Main féminine élégante qui applique le produit sur peau nette — texture visible, geste fluide` },
-        { dur: '6–16 sec', desc: `Montage split : peau avant vs après — texte animé des 3 bénéfices principaux en blanc` },
-        { dur: '16–22 sec', desc: `Shot lifestyle — femme confiante et lumineuse dans un intérieur élégant, musique douce en fond` },
-       { dur: `22-${dur === '30 secondes' ? '30' : dur === '60 secondes' ? '55' : '15'} sec`, desc: `Logo marque + nom produit + prix animés — fond couleur signature — call to action clignotant` }
-      ]
-    };
+    const response = await fetch('/api/generate', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json'
+  },
+
+  body: JSON.stringify({
+    productName: name,
+    category: cat,
+    benefits: document.getElementById('prodBenefits').value,
+    target: document.getElementById('prodTarget').value,
+    market: 'Maroc'
+  })
+});
+
+const data = await response.json();
+
+const aiText =
+  data.choices[0].message.content;
+
+generatedData = {
+  marketAnalysis: aiText,
+  marketOpps: aiText,
+  marketTags: ['AI Generated'],
+  scriptMeta: 'OpenAI Generated',
+  hook: aiText,
+  body: aiText,
+  cta: aiText,
+  blogTitle: aiText,
+  blogPlan: aiText,
+  scenes: [
+    {
+      dur: '0-15 sec',
+      desc: aiText
+    }
+  ]
+};
 
     // Fill UI
     document.getElementById('marketAnalysis').textContent = generatedData.marketAnalysis;
