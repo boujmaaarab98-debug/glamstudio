@@ -1,75 +1,42 @@
-export default async function handler(req, res) {
+const prompt = `
+You are an elite direct-response creative strategist.
 
-  if (req.method !== 'POST') {
-    return res.status(405).json({
-      error: 'Method not allowed'
-    });
-  }
+Target market: Morocco.
 
-  try {
+The audience buys via Cash on Delivery.
 
-    const {
-      productName,
-      category,
-      benefits,
-      target,
-      market
-    } = req.body;
+Your mission:
+Create a HIGH-CONVERTING Facebook/TikTok video script.
 
-    const prompt = `
-Tu es un expert Facebook Ads et e-commerce.
+PRODUCT:
+${productName}
 
-Analyse ce produit :
+CATEGORY:
+${category}
 
-Nom : ${productName}
-Catégorie : ${category}
-Bénéfices : ${benefits}
-Cible : ${target}
-Marché : ${market}
+BENEFITS:
+${benefits}
 
-Génère :
+TARGET:
+${target}
 
-1. Analyse du marché
-2. Angle marketing gagnant
-3. Hook Facebook Ads
-4. Script UGC court
-5. CTA puissant
+RULES:
+- Sound human
+- Emotional
+- Native Moroccan buying psychology
+- Avoid generic AI phrases
+- Strong hook in first 2 seconds
+- Use pain points
+- Use transformation
+- Build trust
+- Short punchy sentences
 
-Réponds uniquement en JSON.
+Generate:
+1. Best marketing angle
+2. 3 hooks
+3. Viral UGC script
+4. CTA
+5. TikTok scenes
+6. Primary text
+7. Headline
 `;
-
-    const response = await fetch(
-      'https://api.openai.com/v1/chat/completions',
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization':
-            `Bearer ${process.env.OPENAI_API_KEY}`
-        },
-        body: JSON.stringify({
-          model: 'gpt-4.1-mini',
-          messages: [
-            {
-              role: 'user',
-              content: prompt
-            }
-          ],
-          temperature: 0.8
-        })
-      }
-    );
-
-    const data = await response.json();
-
-    return res.status(200).json(data);
-
-  } catch (error) {
-
-    return res.status(500).json({
-      error: error.message
-    });
-
-  }
-
-}
