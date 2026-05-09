@@ -1,3 +1,11 @@
+const {
+  productName,
+  category,
+  benefits,
+  target,
+  market,
+  references
+} = req.body;
 const prompt = `
 You are an elite direct-response creative strategist.
 
@@ -30,6 +38,10 @@ RULES:
 - Use transformation
 - Build trust
 - Short punchy sentences
+VIDEOS DE RÉFÉRENCE:
+${references && references.length
+? references.join('\n')
+: 'Aucune référence'}
 
 Generate:
 1. Best marketing angle
