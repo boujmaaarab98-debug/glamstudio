@@ -1171,12 +1171,13 @@
   },
 
   body: JSON.stringify({
-    productName: name,
-    category: cat,
-    benefits: document.getElementById('prodBenefits').value,
-    target: document.getElementById('prodTarget').value,
-    market: 'Maroc'
-  })
+  productName: name,
+  category: cat,
+  benefits: document.getElementById('prodBenefits').value,
+  target: document.getElementById('prodTarget').value,
+  market: 'Maroc',
+  references: chips
+})
 });
 
 const data = await response.json();
