@@ -1000,45 +1000,51 @@
     return { type: 'img', url: raw };
   }
 
-  function loadImageUrl() {
-  const raw = document.getElementById('imgUrl').value.trim();
+ function loadImageUrl() {
+
+  const raw =
+    document.getElementById('imgUrl').value.trim();
+
   if (!raw) {
-    showToast("Entrez un lien image d'abord");
+    alert("Ajoute un lien");
     return;
   }
 
-  const zone = document.getElementById('uploadZone');
-  const success = document.getElementById('uploadSuccess');
-  const preview = document.getElementById('uploadPreview');
+  const match =
+    raw.match(/\/d\/([a-zA-Z0-9_-]+)/);
 
-  const match = raw.match(/\/d\/([a-zA-Z0-9_-]+)/);
-
-  if (match) {
-    const fileId = match[1];
-
-    const directUrl =
-      `https://drive.google.com/uc?export=view&id=${fileId}`;
-
-    preview.src = directUrl;
-
-    preview.style.display = 'block';
-
-    zone.classList.add('has-image');
-
-    productData.imageUrl = directUrl;
-
-    success.style.display = 'block';
-
-    success.textContent =
-      '✓ Image Google Drive chargée !';
-
-    showToast('Image chargée !');
-
-  } else {
-    showToast('Lien Google Drive invalide');
+  if (!match) {
+    alert("Lien invalide");
+    return;
   }
-}
 
+  const fileId = match[1];
+
+  const directUrl =
+    "https://drive.google.com/uc?export=view&id=" + fileId;
+
+  const preview =
+    document.getElementById('uploadPreview');
+
+  preview.src = directUrl;
+
+  preview.style.display = "block";
+
+  document
+    .getElementById('uploadZone')
+    .classList.add('has-image');
+
+  document
+    .getElementById('uploadSuccess')
+    .style.display = 'block';
+
+  document
+    .getElementById('uploadSuccess')
+    .textContent = "✓ Image chargée";
+
+  productData.imageUrl = directUrl;
+
+}
   function handleDrag(e) { e.preventDefault(); document.getElementById('uploadZone').classList.add('dragover'); }
   function handleDrop(e) {
     e.preventDefault();
