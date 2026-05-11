@@ -1185,23 +1185,7 @@ const data = await response.json();
 const aiText =
   data.choices[0].message.content;
 
-generatedData = {
-  marketAnalysis: aiText,
-  marketOpps: aiText,
-  marketTags: ['AI Generated'],
-  scriptMeta: 'OpenAI Generated',
-  hook: aiText,
-  body: aiText,
-  cta: aiText,
-  blogTitle: aiText,
-  blogPlan: aiText,
-  scenes: [
-    {
-      dur: '0-15 sec',
-      desc: aiText
-    }
-  ]
-};
+generatedData = JSON.parse(aiText);
 
     // Fill UI
     document.getElementById('marketAnalysis').textContent = generatedData.marketAnalysis;
