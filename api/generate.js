@@ -42,7 +42,21 @@ VIDEOS DE RÉFÉRENCE:
 ${references && references.length
 ? references.join('\n')
 : 'Aucune référence'}
+Return ONLY valid JSON in this exact format:
 
+{
+  "hook": "...",
+  "body": "...",
+  "cta": "...",
+  "headline": "...",
+  "primaryText": "...",
+  "scenes": [
+    {
+      "duration": "...",
+      "visual": "..."
+    }
+  ]
+}
 Generate:
 1. Best marketing angle
 2. 3 hooks
